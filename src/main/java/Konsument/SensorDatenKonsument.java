@@ -20,7 +20,7 @@ public class SensorDatenKonsument implements Runnable{
     try {
       konsument.subscribe(Collections.singletonList(ServerKonfiguration.TOPIC));
       while (running) {
-        ConsumerRecords<Long, SensorDaten> sensorDaten = konsument.poll(100);
+        ConsumerRecords<Long, SensorDaten> sensorDaten = konsument.poll(5000);
         sensorDaten.forEach(
             datum -> {
               CassandraConnector.schreibeSensorDaten(datum.key(), datum.value());

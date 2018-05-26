@@ -15,10 +15,10 @@ public class Main {
     threadKonsument.start();
     threadProduzent.start();
 
-    if (!threadProduzent.isAlive()) konsument.stop();
-
-    long stopTime = System.currentTimeMillis();
-
-    System.out.format("Benötigte Zeit: %d", stopTime - startTime);
+    if (!threadProduzent.isAlive()) {
+      konsument.stop();
+      long stopTime = System.currentTimeMillis();
+      System.out.format("Benötigte Zeit: %d", stopTime - startTime);
+    }
   }
 }
