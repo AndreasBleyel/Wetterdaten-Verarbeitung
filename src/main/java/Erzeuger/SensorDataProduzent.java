@@ -10,45 +10,44 @@ import org.apache.kafka.common.serialization.LongSerializer;
 
 import java.util.Properties;
 
-public class SensorDataProduzent implements Runnable{
+public class SensorDataProduzent implements Runnable {
 
-    private static final int ANZAHL_NACHRICHTEN = 500;
-    private static final int INTERVALL_SEKUNDEN = 5;
+  private final Producer<Long, SensorDaten> produzent;
+  private int anzahlNachrichten;
 
-    private void produziere(){
+  public SensorDataProduzent(int anzahlNachrichten, String clientId) {
+    setAnzahlNachrichten(anzahlNachrichten);
+    Properties props = new Properties();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerKonfiguration.BOOTSTRAP_SERVERS);
+    props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorDatenSerializer.class.getName());
+    this.produzent = new KafkaProducer<Long, SensorDaten>(props);
+  }
 
-        Sensor sensor1 = new Sensor("S1");
+  @Override
+  public void run() {
+    Sensor sensor1 = new Sensor("S1");
 
-        long time = System.currentTimeMillis();
+    long time = System.currentTimeMillis();
 
-        Producer<Long, SensorDaten> producer = erzeugeKafkaProduzent();
-
-        try{
-        for (long index = time; index < time + ANZAHL_NACHRICHTEN; index++) {
-                ProducerRecord<Long, SensorDaten> record = new ProducerRecord<>(ServerKonfiguration.TOPIC, index, sensor1.produziere());
-                producer.send(record);
-                //Thread.sleep(INTERVALL_SEKUNDEN*1000);
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally{
-            producer.flush();
-            producer.close();
-        }
-
+    try {
+      for (long index = time; index < time + anzahlNachrichten; index++) {
+        ProducerRecord<Long, SensorDaten> record =
+            new ProducerRecord<>(ServerKonfiguration.TOPIC, index, sensor1.produziere());
+        produzent.send(record);
+        System.out.printf("Record gesendet. ID: %s", record.toString());
+        // Thread.sleep(INTERVALL_SEKUNDEN*1000);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      produzent.flush();
+      produzent.close();
     }
+  }
 
-    private Producer<Long, SensorDaten> erzeugeKafkaProduzent() {
-        Properties props = new Properties();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerKonfiguration.BOOTSTRAP_SERVERS);
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, "SensorDatenProducer");
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorDatenSerializer.class.getName());
-        return new KafkaProducer<>(props);
-    }
-
-    @Override
-    public void run() {
-        produziere();
-    }
+  public void setAnzahlNachrichten(int anzahlNachrichten) {
+    this.anzahlNachrichten = anzahlNachrichten;
+  }
 }

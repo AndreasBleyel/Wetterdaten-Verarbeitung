@@ -8,20 +8,18 @@ public class CassandraConnector {
 
   private static final String KEYSPACE = "ba2";
   private static final String SERVER_IP = "127.0.0.1";
-  private static Cluster cluster;
-  private static Session session;
+  private Cluster cluster;
+  private Session session;
 
-  public static void connect() {
-
+  public CassandraConnector(){
     cluster = Cluster.builder().addContactPoint(SERVER_IP).build();
     session = cluster.connect();
     session.execute("USE " + KEYSPACE);
   }
 
-  public static void schreibeSensorDaten(Long key, SensorDaten datum) {
+  public void schreibeSensorDaten(Long key, SensorDaten datum) {
 
     try {
-      connect();
 
       session.execute(
           "INSERT INTO wetterdaten (id, date_time, air_temp, std_air_temp, humidity, std_humidity,"
@@ -94,6 +92,7 @@ public class CassandraConnector {
               + "');");
     } catch (Exception e) {
       e.printStackTrace();
+      System.err.printf("Error beim schreiben");
     } finally {
       if (cluster != null) cluster.close();
     }

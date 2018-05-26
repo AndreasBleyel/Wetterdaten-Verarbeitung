@@ -10,24 +10,39 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import java.util.Collections;
 import java.util.Properties;
 
-public class SensorDatenKonsument implements Runnable{
+public class SensorDatenKonsument implements Runnable {
 
-  private boolean running = true;
+  private final KafkaConsumer<Long, SensorDaten> konsument;
+  private boolean running;
 
-  private void konsumiere() {
-    KafkaConsumer<Long, SensorDaten> konsument = erzeugeKafkaKonsument();
+  public SensorDatenKonsument(String groupId) {
+    Properties props = new Properties();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerKonfiguration.BOOTSTRAP_SERVERS);
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
+    props.put(
+        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorDatenDeserializer.class.getName());
+    this.konsument = new KafkaConsumer<Long, SensorDaten>(props);
+  }
+
+  @Override
+  public void run() {
+
+    setRunning(true);
 
     try {
+      CassandraConnector cassandraConnector = new CassandraConnector();
       konsument.subscribe(Collections.singletonList(ServerKonfiguration.TOPIC));
+
       while (running) {
-        ConsumerRecords<Long, SensorDaten> sensorDaten = konsument.poll(5000);
+        ConsumerRecords<Long, SensorDaten> sensorDaten = konsument.poll(Long.MAX_VALUE);
         sensorDaten.forEach(
-            datum -> {
-              CassandraConnector.schreibeSensorDaten(datum.key(), datum.value());
-              System.out.printf(
-                  "Consumer Record:(%d, %s, %d, %d)\n",
-                  datum.key(), datum.value(), datum.partition(), datum.offset());
-            });
+                datum -> {
+                  cassandraConnector.schreibeSensorDaten(datum.key(), datum.value());
+                  System.out.printf(
+                          "Consumer Record:(%d, %s, %d, %d)\n",
+                          datum.key(), datum.value(), datum.partition(), datum.offset());
+                });
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -36,22 +51,7 @@ public class SensorDatenKonsument implements Runnable{
     }
   }
 
-  private KafkaConsumer<Long, SensorDaten> erzeugeKafkaKonsument() {
-    Properties props = new Properties();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ServerKonfiguration.BOOTSTRAP_SERVERS);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "SensorDatenConsumer");
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
-    props.put(
-        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorDatenDeserializer.class.getName());
-    return new KafkaConsumer<Long, SensorDaten>(props);
-  }
-
-  @Override
-  public void run() {
-    konsumiere();
-  }
-
-  public void stop(){
+  public void stop() {
     setRunning(false);
   }
 

@@ -7,13 +7,14 @@ public class Main {
 
     long startTime = System.currentTimeMillis();
 
-    SensorDatenKonsument konsument = new SensorDatenKonsument();
+    SensorDatenKonsument konsument = new SensorDatenKonsument( "Konsument");
+    SensorDataProduzent produzent = new SensorDataProduzent(500, "SensorDatenProducer");
 
     Thread threadKonsument = new Thread(konsument, "Thread Konsument");
-    Thread threadProduzent = new Thread(new SensorDataProduzent(), "Thread Produzent");
+    Thread threadProduzent = new Thread(produzent, "Thread Produzent");
 
-    threadKonsument.start();
-    threadProduzent.start();
+      threadProduzent.start();
+      threadKonsument.start();
 
     if (!threadProduzent.isAlive()) {
       konsument.stop();
