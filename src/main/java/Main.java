@@ -1,25 +1,17 @@
-import Erzeuger.SensorDataProduzent;
+import Erzeuger.SensorDatenProduzent;
 import Konsument.SensorDatenKonsument;
 
 public class Main {
 
   public static void main(String... args) {
 
-    long startTime = System.currentTimeMillis();
-
-    SensorDatenKonsument konsument = new SensorDatenKonsument( "Konsument");
-    SensorDataProduzent produzent = new SensorDataProduzent(500, "SensorDatenProducer");
-
+    SensorDatenKonsument konsument = new SensorDatenKonsument("SensorDatenKonsument");
     Thread threadKonsument = new Thread(konsument, "Thread Konsument");
+
+    SensorDatenProduzent produzent = new SensorDatenProduzent( "SensorDatenProduzent");
     Thread threadProduzent = new Thread(produzent, "Thread Produzent");
 
-      threadProduzent.start();
-      threadKonsument.start();
-
-    if (!threadProduzent.isAlive()) {
-      konsument.stop();
-      long stopTime = System.currentTimeMillis();
-      System.out.format("Benötigte Zeit: %d", stopTime - startTime);
-    }
+    threadKonsument.start();
+    threadProduzent.start();
   }
 }
