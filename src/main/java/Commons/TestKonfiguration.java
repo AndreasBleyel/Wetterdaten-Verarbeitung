@@ -11,13 +11,15 @@ public class TestKonfiguration {
   /**
    * SensorDatenProduzent
    */
-  public static int ANZAHL_NACHRICHTEN = 8760;
+  public static int ANZAHL_NACHRICHTEN = 10;
+  public static int ANZAHL_PRODUZENTEN = 4;
 
   /**
    * Cassandra
    */
   public static final String KEYSPACE = "ba2";
   public static final String CASS_SERVER_IP = "127.0.0.1";
+  public static final String WETTERDATEN_TABLE = "wetterdaten";
 
   private TestKonfiguration() {
     }

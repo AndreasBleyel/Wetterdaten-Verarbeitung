@@ -1,5 +1,6 @@
 package Erzeuger;
 
+import Commons.NotifyingThread;
 import Commons.SensorDaten;
 import Commons.TestKonfiguration;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -11,7 +12,7 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class SensorDatenProduzent implements Runnable {
+public class SensorDatenProduzent extends NotifyingThread {
 
   private final Producer<Long, SensorDaten> produzent;
   private String name;
@@ -27,7 +28,7 @@ public class SensorDatenProduzent implements Runnable {
   }
 
   @Override
-  public void run() {
+  public void doRun() {
     Sensor sensor1 = new Sensor();
     try {
       for (int i = 0; i < TestKonfiguration.ANZAHL_NACHRICHTEN; i++) {
@@ -45,6 +46,7 @@ public class SensorDatenProduzent implements Runnable {
     } finally {
       produzent.flush();
       produzent.close();
+      System.out.printf("Ich %s bin tot",name);
     }
   }
 }
