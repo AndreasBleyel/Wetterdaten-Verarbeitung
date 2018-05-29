@@ -9,12 +9,15 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.LongSerializer;
 
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class SensorDatenProduzent implements Runnable {
 
   private final Producer<Long, SensorDaten> produzent;
+  private String name;
 
-  public SensorDatenProduzent(String clientId) {
+  public SensorDatenProduzent(String clientId, String name) {
+    this.name = name;
     Properties props = new Properties();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, TestKonfiguration.BOOTSTRAP_SERVERS);
     props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
@@ -25,16 +28,16 @@ public class SensorDatenProduzent implements Runnable {
 
   @Override
   public void run() {
-    Sensor sensor1 = new Sensor("S1");
-
-    long time = System.currentTimeMillis();
-
+    Sensor sensor1 = new Sensor();
     try {
-      for (long index = time; index < time + TestKonfiguration.ANZAHL_NACHRICHTEN; index++) {
+      for (int i = 0; i < TestKonfiguration.ANZAHL_NACHRICHTEN; i++) {
         ProducerRecord<Long, SensorDaten> record =
-            new ProducerRecord<>(TestKonfiguration.TOPIC, index, sensor1.produziere());
+            new ProducerRecord<>(
+                TestKonfiguration.TOPIC,
+                ThreadLocalRandom.current().nextLong(Long.MAX_VALUE),
+                sensor1.produziere());
         produzent.send(record);
-        //System.out.printf("Record gesendet. ID: %s", record.toString());
+        System.out.printf("#%s#", name);
       }
 
     } catch (Exception e) {
@@ -42,7 +45,6 @@ public class SensorDatenProduzent implements Runnable {
     } finally {
       produzent.flush();
       produzent.close();
-
     }
   }
 }

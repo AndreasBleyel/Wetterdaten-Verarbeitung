@@ -86,11 +86,6 @@ public class SensorDatenKonsument implements Runnable {
                       datum.value().getError(),
                       datum.value().getWdtTrace(),
                       datum.value().getCrc3()));
-
-              System.out.printf(
-                  "Write erfolgreich:(%d, %s, %d, %d)\n",
-                  datum.key(), datum.value(), datum.partition(), datum.offset());
-
             });
       }
     } catch (Exception e) {
