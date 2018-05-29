@@ -34,7 +34,7 @@ public class SensorDatenProduzent implements Runnable {
         ProducerRecord<Long, SensorDaten> record =
             new ProducerRecord<>(TestKonfiguration.TOPIC, index, sensor1.produziere());
         produzent.send(record);
-        System.out.printf("Record gesendet. ID: %s", record.toString());
+        //System.out.printf("Record gesendet. ID: %s", record.toString());
       }
 
     } catch (Exception e) {

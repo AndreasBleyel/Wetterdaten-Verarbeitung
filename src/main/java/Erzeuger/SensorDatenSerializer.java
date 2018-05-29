@@ -29,10 +29,6 @@ public class SensorDatenSerializer implements Serializer<SensorDaten> {
   @Override
   public void close() {}
 
-  public boolean isKey() {
-    return isKey;
-  }
-
   public void setKey(boolean key) {
     isKey = key;
   }
