@@ -12,6 +12,10 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import java.util.Collections;
 import java.util.Properties;
 
+/**
+ * SensorDatenKonsument bildet einen Kafka Konsumenten ab welcher die Daten aus dem Kafka Topic
+ * liest, deserialisiert und in die Cassandra Datenbank schreibt.
+ */
 public class SensorDatenKonsument extends NotifyingThread {
 
   /** Kafka Konsument */
@@ -53,6 +57,10 @@ public class SensorDatenKonsument extends NotifyingThread {
 
       getNumberOfRowsAtStart();
 
+      /**
+       * Solange es aktive Produzenten gibt oder es noch offene Datensätze zu schreiben gibt, ist
+       * der Konsument aktiv.
+       */
       while (produzentenAktiv || !isAllDataWritten()) {
         ConsumerRecords<Long, SensorDaten> kafkaRecord = konsument.poll(Long.MAX_VALUE);
 
@@ -104,18 +112,29 @@ public class SensorDatenKonsument extends NotifyingThread {
     }
   }
 
+  /**
+   * Prüft ob alle Datensätze geschrieben sind. Dafür wird die Anzahl der bereits vor Beginn des
+   * ersten Schreibvorganges in der Tabelle befindlichen Datensätze mit der zu schreibenden (vorher
+   * bekannt) Anzahl verglichen. Dieser Vorgang ist nur notwendig um die Laufzeitmessung durchführen
+   * zu können.
+   */
   private boolean isAllDataWritten() {
     ResultSet resultSet =
         session.execute(
             "SELECT count(*) as rows FROM " + TestKonfiguration.WETTERDATEN_TABLE + " ;");
 
     int actualSumOfRows = convertResultToInt(resultSet.one().toString());
-    if ( (actualSumOfRows - sumOfRowsAtStart) == (TestKonfiguration.ANZAHL_NACHRICHTEN * TestKonfiguration.ANZAHL_PRODUZENTEN) ) {
+    if ((actualSumOfRows - sumOfRowsAtStart)
+        == (TestKonfiguration.ANZAHL_NACHRICHTEN * TestKonfiguration.ANZAHL_PRODUZENTEN)) {
       return true;
     }
     return false;
   }
 
+  /**
+   * Liefert die vor Beginn des ersten Schreibvorgangens in der Tabelle befindliche Anzahl an
+   * Datensätze.
+   */
   private void getNumberOfRowsAtStart() {
     ResultSet resultSet =
         session.execute(
@@ -129,6 +148,6 @@ public class SensorDatenKonsument extends NotifyingThread {
   }
 
   private int convertResultToInt(String result) {
-    return Integer.parseInt(result.substring(4, result.length()-1));
+    return Integer.parseInt(result.substring(4, result.length() - 1));
   }
 }

@@ -1,5 +1,8 @@
 package Commons;
 
+/**
+ * Nicht instanziierbare Klasse welche diverse Konfigurationsvariablen enthält.
+ */
 public class TestKonfiguration {
 
   /**

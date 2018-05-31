@@ -12,6 +12,11 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * SensorDatenProduzent übernimmt die Generierung der Sensordaten. Jede Instanz verbindet sich mit
+ * der Kafka Instanz und erzeut mittels eines Sensors Daten. Die Anzahl hängt von dem in der Klasse
+ * TestKonfiguration.class definierten Wertes ab.
+ */
 public class SensorDatenProduzent extends NotifyingThread {
 
   private final Producer<Long, SensorDaten> produzent;
@@ -24,7 +29,7 @@ public class SensorDatenProduzent extends NotifyingThread {
     props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SensorDatenSerializer.class.getName());
-    this.produzent = new KafkaProducer<Long, SensorDaten>(props);
+    this.produzent = new KafkaProducer<>(props);
   }
 
   @Override
@@ -38,7 +43,6 @@ public class SensorDatenProduzent extends NotifyingThread {
                 ThreadLocalRandom.current().nextLong(Long.MAX_VALUE),
                 sensor1.produziere());
         produzent.send(record);
-        System.out.printf("#%s#", name);
       }
 
     } catch (Exception e) {
@@ -46,7 +50,6 @@ public class SensorDatenProduzent extends NotifyingThread {
     } finally {
       produzent.flush();
       produzent.close();
-      System.out.printf("Ich %s bin tot",name);
     }
   }
 }

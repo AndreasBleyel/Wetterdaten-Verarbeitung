@@ -3,6 +3,10 @@ package Commons;
 import Erzeuger.SensorDatenProduzent;
 import Konsument.SensorDatenKonsument;
 
+/**
+ * ThreadHandler übernimmt die Koordination zwischen den einzelnen Thread. Dies ist notwendig, um
+ * die Laufzeit der Datenverarbeitung zu messen.
+ */
 public class ThreadHandler implements ThreadCompleteListener {
 
   private int anzahlBeendeterThreads = 0;
@@ -49,11 +53,15 @@ public class ThreadHandler implements ThreadCompleteListener {
     long endTime = System.currentTimeMillis();
 
     long gesamtLaufzeit = endTime - startTime;
-    System.out.println("Laufzeit: " + gesamtLaufzeit / 1000 +"s");
+    System.out.println("Laufzeit: " + gesamtLaufzeit / 1000 + "s");
   }
 
   @Override
   public void notifyOfThreadComplete(Thread thread) {
+    /**
+     * Sobald alle Produzenten fertig sind, wird der Konsument darüber benachrichtigt um beendet zu
+     * werden.
+     */
     anzahlBeendeterThreads++;
     if (anzahlBeendeterThreads == TestKonfiguration.ANZAHL_PRODUZENTEN) {
       konsument.produzentenFertig();
