@@ -62,6 +62,7 @@ public class SensorDatenKonsument extends NotifyingThread {
        * der Konsument aktiv.
        */
       while (produzentenAktiv || !isAllDataWritten()) {
+
         ConsumerRecords<Long, SensorDaten> kafkaRecord = konsument.poll(Long.MAX_VALUE);
 
         if (!kafkaRecord.isEmpty()) {

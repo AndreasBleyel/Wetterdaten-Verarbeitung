@@ -14,7 +14,7 @@ public class TestKonfiguration {
   /**
    * SensorDatenProduzent
    */
-  public static int ANZAHL_NACHRICHTEN = 10;
+  public static int ANZAHL_NACHRICHTEN = 8760;
   public static int ANZAHL_PRODUZENTEN = 4;
 
   /**

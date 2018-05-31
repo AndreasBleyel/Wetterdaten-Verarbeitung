@@ -2,6 +2,7 @@ package Commons;
 
 import Erzeuger.SensorDatenProduzent;
 import Konsument.SensorDatenKonsument;
+import org.slf4j.Logger;
 
 /**
  * ThreadHandler übernimmt die Koordination zwischen den einzelnen Thread. Dies ist notwendig, um
@@ -11,6 +12,7 @@ public class ThreadHandler implements ThreadCompleteListener {
 
   private int anzahlBeendeterThreads = 0;
   private SensorDatenKonsument konsument;
+
 
   public void startThreads() {
     konsument = new SensorDatenKonsument("SensorDatenKonsument");
@@ -35,24 +37,33 @@ public class ThreadHandler implements ThreadCompleteListener {
     threadKonsument.addListener(this);
 
     long startTime = System.currentTimeMillis();
+
     threadProduzent1.start();
     threadProduzent2.start();
     threadProduzent3.start();
     threadProduzent4.start();
-    threadKonsument.start();
 
     try {
       threadProduzent1.join();
       threadProduzent2.join();
       threadProduzent3.join();
       threadProduzent4.join();
-      threadKonsument.join();
+      threadKonsument.start();
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+
+
+    try{
+      threadKonsument.join();
+    }catch (InterruptedException e){
+      e.printStackTrace();
+    }
+
     long endTime = System.currentTimeMillis();
 
     long gesamtLaufzeit = endTime - startTime;
+
     System.out.println("Laufzeit: " + gesamtLaufzeit / 1000 + "s");
   }
 
