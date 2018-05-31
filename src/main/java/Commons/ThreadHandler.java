@@ -18,16 +18,16 @@ public class ThreadHandler implements ThreadCompleteListener {
     konsument = new SensorDatenKonsument("SensorDatenKonsument");
     NotifyingThread threadKonsument = konsument;
 
-    SensorDatenProduzent produzent1 = new SensorDatenProduzent("SensorDatenProduzent1", "P1");
+    SensorDatenProduzent produzent1 = new SensorDatenProduzent("SensorDatenProduzent1");
     NotifyingThread threadProduzent1 = produzent1;
 
-    SensorDatenProduzent produzent2 = new SensorDatenProduzent("SensorDatenProduzent2", "P2");
+    SensorDatenProduzent produzent2 = new SensorDatenProduzent("SensorDatenProduzent2");
     NotifyingThread threadProduzent2 = produzent2;
 
-    SensorDatenProduzent produzent3 = new SensorDatenProduzent("SensorDatenProduzent3", "P3");
+    SensorDatenProduzent produzent3 = new SensorDatenProduzent("SensorDatenProduzent3");
     NotifyingThread threadProduzent3 = produzent3;
 
-    SensorDatenProduzent produzent4 = new SensorDatenProduzent("SensorDatenProduzent4", "P4");
+    SensorDatenProduzent produzent4 = new SensorDatenProduzent("SensorDatenProduzent4");
     NotifyingThread threadProduzent4 = produzent4;
 
     threadProduzent1.addListener(this);

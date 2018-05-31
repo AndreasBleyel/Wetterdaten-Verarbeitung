@@ -20,10 +20,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SensorDatenProduzent extends NotifyingThread {
 
   private final Producer<Long, SensorDaten> produzent;
-  private String name;
 
-  public SensorDatenProduzent(String clientId, String name) {
-    this.name = name;
+  public SensorDatenProduzent(String clientId) {
     Properties props = new Properties();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, TestKonfiguration.BOOTSTRAP_SERVERS);
     props.put(ProducerConfig.CLIENT_ID_CONFIG, clientId);
