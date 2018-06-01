@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 
 /**
  * ThreadHandler übernimmt die Koordination zwischen den einzelnen Thread. Dies ist notwendig, um
- * die Laufzeit der Datenverarbeitung zu messen.
+ * die Laufzeit zu messen.
  */
 public class ThreadHandler implements ThreadCompleteListener {
 
